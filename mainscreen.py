@@ -327,7 +327,7 @@ class Ui_MainWindow(object):
         self.treeParts.headerItem().setTextAlignment(0, QtCore.Qt.AlignCenter)
         self.treeParts.headerItem().setTextAlignment(1, QtCore.Qt.AlignCenter)
         item_0 = QtWidgets.QTreeWidgetItem(self.treeParts)
-        self.lineInfo = ClickableLineEdit(self.frameBroadcast)
+        self.lineInfo = QtWidgets.QLineEdit(self.frameBroadcast)
         self.lineInfo.setGeometry(QtCore.QRect(50, 50, 311, 31))
         self.lineInfo.setStyleSheet("background-color: rgb(243, 243, 243);\n"
 "border-radius: 15px;")
@@ -351,14 +351,14 @@ class Ui_MainWindow(object):
         self.frameInfo.setFrameShape(QtWidgets.QFrame.WinPanel)
         self.frameInfo.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frameInfo.setObjectName("frameInfo")
-        self.lineProductName = ClickableLineEdit(self.frameInfo)
+        self.lineProductName = QtWidgets.QLineEdit(self.frameInfo)
         self.lineProductName.setGeometry(QtCore.QRect(40, 50, 311, 31))
         self.lineProductName.setStyleSheet("background-color: rgb(243, 243, 243);\n"
 "border-radius: 15px;")
         self.lineProductName.setText("")
         self.lineProductName.setAlignment(QtCore.Qt.AlignCenter)
         self.lineProductName.setObjectName("lineProductName")
-        self.lineUnits = ClickableLineEdit(self.frameInfo)
+        self.lineUnits = QtWidgets.QLineEdit(self.frameInfo)
         self.lineUnits.setGeometry(QtCore.QRect(40, 110, 311, 31))
         self.lineUnits.setStyleSheet("background-color: rgb(243, 243, 243);\n"
 "border-radius: 15px;")
@@ -455,7 +455,7 @@ class Ui_MainWindow(object):
 "border-radius: 15px;")
         self.labelBarcode.setAlignment(QtCore.Qt.AlignCenter)
         self.labelBarcode.setObjectName("labelBarcode")
-        self.lineTime = ClickableLineEdit(self.frameInfo)
+        self.lineTime = QtWidgets.QLineEdit(self.frameInfo)
         self.lineTime.setGeometry(QtCore.QRect(40, 170, 311, 31))
         self.lineTime.setStyleSheet("background-color: rgb(243, 243, 243);\n"
 "border-radius: 15px;")
@@ -699,4 +699,3 @@ class Ui_MainWindow(object):
         item = self.tableWidget.item(0, 0)
         item.setText(_translate("MainWindow", "1"))
         self.tableWidget.setSortingEnabled(__sortingEnabled)
-from ClickableLineEdit import ClickableLineEdit
