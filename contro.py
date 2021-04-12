@@ -10,9 +10,9 @@ import cv2 as cv
 import time
 
 targetTime = 0
+detected = 0
 print("global- ",targetTime)
 class Main(QMainWindow, Ui_MainWindow):
-    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setupUi(self)
@@ -26,12 +26,13 @@ class Main(QMainWindow, Ui_MainWindow):
 
     def timeSet(self):
         global targetTime
+        
         targetTime = self.lineTime.text()
         print("setvalue ", targetTime)
         self.labelTargetTime.setText(
             "Target Time - " + str(targetTime) + " m")
         self.labelTargetTime.adjustSize()
-        self.progressThread()
+        
 
     def updateProduct(self):
         self.productName = self.lineProductName.text()
@@ -72,6 +73,8 @@ class Main(QMainWindow, Ui_MainWindow):
 
     def startCam(self):
         print("clicked")
+        global detected
+
 
         self.cap = cv.VideoCapture(-1)
 
@@ -139,7 +142,6 @@ class Main(QMainWindow, Ui_MainWindow):
 
                                     flag = 0
                                     for barcode in decode(thresh2):
-
                                         code = barcode.data.decode('utf-8')
                                         if code != "":
                                             codes = code.split()
@@ -150,7 +152,9 @@ class Main(QMainWindow, Ui_MainWindow):
                                         if self.mainCode[:2] == "TS":
                                             if codeList == []:
                                                 codeList.append(self.mainCode)
+                                                detected = 1
                                                 self.updateJob()
+                                                self.progressThread()
                                                 self.timeThread()
                                                 print(codeList)
                                             else:
@@ -176,9 +180,10 @@ class Main(QMainWindow, Ui_MainWindow):
             smallNormal = cv.resize(
                 frm2, None, fx=0.5, fy=0.5, interpolation=cv.INTER_AREA)
 
+            threshSmall = cv.resize(thresh, None, fx=0.5, fy=0.5, interpolation=cv.INTER_AREA)
             cv.imshow("frame", small)
             cv.imshow("Normal Frame", smallNormal)
-            cv.imshow("theash", thresh)
+            cv.imshow("theash", threshSmall)
 
             cv.waitKey(1)
             
@@ -196,19 +201,49 @@ class Main(QMainWindow, Ui_MainWindow):
 class ProgressThread(QThread):
 
     countSignal = pyqtSignal(int)
-
+    count = 0
+    secs = 0
+    mins = 0
+    print("global-", count)
     def __init__(self):
+        global count
+        global interval
+        secs = 0
+        mins = 0
         super(ProgressThread, self).__init__()
-
-    def run(self):
-        print("inside progress thread-  ", targetTime)
+        interval = int(((int(targetTime)*60)/100)*1000)
+        print("interval-", interval)
         if int(targetTime)>0:
-            interval = (int(targetTime)*60)/100
-            count = int((secs + (mins*60))/interval)
-            while count < 101:
-                self.countSignal.emit(count)
-                time.sleep(interval)
-                count=count+1
+            count = int((secs + (mins*60))/(interval/1000))
+            print("init-", count)
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.progress)
+        self.timer.start(interval)
+
+    # def run(self):
+    #     print("inside progress thread-  ", targetTime)
+    #     if int(targetTime)>0:
+    #         interval = (int(targetTime)*60)/100
+    #         count = int((secs + (mins*60))/interval)
+    #         while count < 101:
+    #             self.countSignal.emit(count)
+    #             time.sleep(interval)
+    #             count=count+1
+    
+    def progress(self):
+        global count
+        global interval
+        if int(targetTime)>0 and detected == 1:
+            interval = int(((int(targetTime)*60)/100)*1000)
+            count = int((secs + (mins*60))/(interval/1000))
+            print("init-", count)
+
+            if count>99:
+                self.timer.stop()
+            self.countSignal.emit(count)
+            count=count+1
+            print("inc-", count)
+
 
 
 class TimeThread(QThread):
